@@ -1,10 +1,16 @@
 const express = require('express');
+const multer = require('multer');
+
+const uploadConfig = require('./config/upload');
+
+const SessionController = require('./controllers/SessionController');
+const SpotController = require('./controllers/SpotController');
 
 const routes = express.Router();
+const upload = multer(uploadConfig);
 
-routes.post('/users', (req, res) => {    // When accessing (GET) the app through the route in the first
-    // parameter, it calls the function defined in the 2º parameter
-return res.json(req.body);
-});
+routes.post('/sessions', SessionController.store);
+
+routes.post('/spots', upload.single('thumbnail'), SpotController.store);
 
 module.exports = routes;

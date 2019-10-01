@@ -2,6 +2,14 @@ const Spot = require('../models/Spot');
 const User = require('../models/User');
 
 module.exports = {
+    async index(req, res) {
+        const { tech } = req.query;
+
+        const spots = await Spot.find({ techs: tech });
+
+        return res.json(spots);
+    },
+
     async store(req, res) {
         /*console.log(req.body);
         console.log(req.file);  // multer gets the file in the req.file instead of using the body

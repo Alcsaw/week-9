@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 
 const database_access = require('./config/database_access');
 const routes = require('./routes'); // Relative path, so it does not look for a module or package, but file
@@ -27,6 +28,9 @@ mongoose.connect(`mongodb+srv://${database_access.username}:${database_access.pa
 
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());    // Enabling JSON support for the app
+app.use('/files', express.static(path.resolve(__dirname, '..', 'uploads')));
+                            // Express uses static to handle static files (e.g. PDFs, images etc,
+                            // generally, uploaded files)
 app.use(routes);    // Makes the app uses the routes defined in the imported file.
                     // Must be defined after the JSON, because JSON is only enabled in the functions
                     // declared after its own declaration

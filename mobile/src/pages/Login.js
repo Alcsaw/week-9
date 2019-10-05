@@ -37,6 +37,7 @@ export default function Login({ navigation }) {
 
         // navigation is an 'equivalent' to the history in the web
         navigation.navigate('List');
+        //TODO: Add required in the TextInputs of the form
     }
 
     return (

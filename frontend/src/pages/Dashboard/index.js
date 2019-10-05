@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 // Links is used to create links to other pages without needind to history.push it
 import socketio from 'socket.io-client';
@@ -13,6 +13,7 @@ export default function Dashboard() {
 
     const [spots, SetSpots] = useState([]); // since the backend sends an array, the best way to
                                             // initialize the variable is an empty array
+    const[requests, setResquests] = useState([]);
 
     // useEffect receives a callback function and an array of dependencies
     // wich determines when the cb function should be executed. When a variable in the array is changed,
@@ -33,16 +34,33 @@ export default function Dashboard() {
         loadSpots();
     }, [])
 
-    useEffect(() => {
-        const socket = socketio(serverConfig.baseURL);
+    const user_id = localStorage.getItem('user');
+    const socket = useMemo(() => socketio(serverConfig.baseURL, {
+        query: { user_id },
+    }), [user_id]);     // useMemo will save the socket variable and update it only when the
+                        // variable user_id changes
 
-        socket.on('message_hello', data => {
-            console.log(data);
+    useEffect(() => {
+        socket.on('booking_request', data => {
+            setResquests([...requests, data]);
         })
-    }, []);
+    }, [requests, socket]);
 
     return (
         <>
+            <ul className="notifications">
+                {requests.map(request => (
+                    <li key={request._id}>
+                        <p>
+                            <strong>{request.user.email}</strong> está solicitando uma reserva em <strong>{request.spot.company}</strong> para a data: <strong>{request.date}</strong>
+                        </p>
+
+                        <button className="accept">ACEITAR</button>
+                        <button className="reject">REJEITAR</button>
+                    </li>
+                ))}
+            </ul>
+
             <ul className="spot-list">
                 {spots.map(spot => (
                     <li key={spot._id}>

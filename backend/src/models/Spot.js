@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 
 const serverConfig = require('../config/server');
 
-console.log(serverConfig);
-
 const SpotSchema = new mongoose.Schema({
     thumbnail: String,
     company: String,

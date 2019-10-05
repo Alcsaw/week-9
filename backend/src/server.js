@@ -11,18 +11,33 @@ const routes = require('./routes'); // Relative path, so it does not look for a 
 
 const app = express();  // Definition of the app to execute express
 const server = http.Server(app);    // Abstraction of the server running HTTP protocol
-const io = socketio(server);        // Adding capability to the server to handle socket io
-
-io.on('connection', socket => {
-    console.log('Usuário conectado', socket.id);
-
-    socket.emit('message_hello', 'Hello world!');
-});
+const io = socketio(server);        // Adding capability to the server to handle socket io.
+                                    // Used to send and receive messages from/to frontend or mobile
 
 mongoose.connect(`mongodb+srv://${database_access.username}:${database_access.password}@cluster0-6wy8b.mongodb.net/${database_access.db_name}?retryWrites=true&w=majority`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
+
+const connectedUsers = {};
+// Not suitable for production. At server restart, all users connections would be lost.
+// Instead, use a fast database, e.g. Redis.
+
+io.on('connection', socket => {
+    const { user_id } = socket.handshake.query;
+
+    connectedUsers[user_id] = socket.id;
+});
+
+// Adding objects to all routes of the application
+app.use((req, res, next) => {
+    req.io = io;
+    req.connectedUsers = connectedUsers;
+    // Now all routse defined below will have access to req.io to send and receive messages in real
+    // time with the server and also to the req.connectedUsers so they can identify the users.
+
+    return next();  // Resumes application flow
+}); 
 
 // GET => request an information (SELECT) from backend;
 //      req.query => access query params (to filter)

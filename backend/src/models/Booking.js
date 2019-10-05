@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+// At creation, a booking has the approved field set as null (actually not set in the MongoDB).
+// After the response to the request it is set as a Boolean.
+
 const BookingSchema = new mongoose.Schema({
     date: String,
     approved:Boolean,

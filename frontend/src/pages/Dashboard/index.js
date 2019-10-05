@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 // Links is used to create links to other pages without needind to history.push it
+import socketio from 'socket.io-client';
+
 import api from '../../services/api';
 
 import './styles.css';
+
+const serverConfig = require('../../config/server');
 
 export default function Dashboard() {
 
@@ -28,6 +32,14 @@ export default function Dashboard() {
 
         loadSpots();
     }, [])
+
+    useEffect(() => {
+        const socket = socketio(serverConfig.baseURL);
+
+        socket.on('message_hello', data => {
+            console.log(data);
+        })
+    }, []);
 
     return (
         <>

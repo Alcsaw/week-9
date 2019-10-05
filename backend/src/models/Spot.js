@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+const serverConfig = require('../config/server');
+
+console.log(serverConfig);
+
 const SpotSchema = new mongoose.Schema({
     thumbnail: String,
     company: String,
@@ -20,7 +24,7 @@ const SpotSchema = new mongoose.Schema({
 SpotSchema.virtual('thumbnail_url').get(function() {
     //return `http://localhost:3333/files/${this.thumbnail}`
     // Fix images not showing on Android Device
-    return `http://192.168.0.101:3333/files/${this.thumbnail}`
+    return `${serverConfig.baseURL}/files/${this.thumbnail}`
 })
 
 module.exports = mongoose.model('Spot', SpotSchema);

@@ -1,3 +1,4 @@
 /node_modules/*
 /src/config/database_access.js
+/src/config/server.js
 /uploads/*

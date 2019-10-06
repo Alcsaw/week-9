@@ -43,11 +43,11 @@ function SpotList({ tech, navigation }) {
             <Text style={styles.title}>
                 Empresas que usam <Text style={styles.bold}>{tech}</Text>
             </Text>
-
+            
             <FlatList
                 style={styles.list}
                 data={spots}
-                keyExtractor={spot => spots._id}
+                keyExtractor={spot => spot._id}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => (

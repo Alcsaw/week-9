@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, AsyncStorage, Image, StyleSheet } from 'react-native';
+import socketio from 'socket.io-client';
+import { SafeAreaView, ScrollView, AsyncStorage, Image, StyleSheet, Alert } from 'react-native';
 
+import serverConfig from '../config/server';
 import SpotList from '../components/SpotList';
 
 import logo from '../assets/logo.png';
@@ -14,13 +16,25 @@ export default function List() {
     const [techs, setTechs] = useState([]);
 
     useEffect(() => {
+        AsyncStorage.getItem('user').then(user_id => {
+            const socket = socketio(serverConfig.baseURL, {
+                query: { user_id }
+            });
+
+            socket.on('booking_response', booking => {
+                Alert.alert(`Sua reserva em ${booking.spot.company} em ${booking.date} foi ${booking.approved ? 'APROVADA' : 'REJEITADA'}`);
+            })
+        })
+    }, []);
+
+    useEffect(() => {
         AsyncStorage.getItem('techs').then(storagedTechs => {
             const techsArray = storagedTechs.split(',').map(tech => tech.trim());
 
             setTechs(techsArray);
         })
 
-        //AsyncStorage.clear();
+        //AsyncStorage.clear(); // To reset app's storage
     }, []);
 
 
@@ -29,7 +43,7 @@ export default function List() {
             <Image style={styles.logo} source={logo} />
 
             <ScrollView>
-                {techs.map(tech => <SpotList key={tech} tech={tech}/> )}
+                {techs.map(tech => <SpotList key={tech} tech={tech}/>)}
             </ScrollView>
         </SafeAreaView>
     )
